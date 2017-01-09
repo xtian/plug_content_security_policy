@@ -17,6 +17,8 @@ defmodule PlugContentSecurityPolicy.Mixfile do
   end
 
   defp deps do
-    []
+    [
+      {:plug, "~> 1.3"}
+    ]
   end
 end
