@@ -26,7 +26,7 @@ defmodule YourApp.Endpoint do
 
   # Pass configuration explicitly
   plug PlugContentSecurityPolicy,
-    nonces_for: [:style_src]
+    nonces_for: [:style_src],
     directives: %{script_src: ~w(https: 'self')}
 end
 ```
@@ -38,12 +38,12 @@ CSP header.
 
 ## Configuration
 
-You can configure the CSP directives and using Mix. The default configuration
+You can configure the CSP directives using Mix. The default configuration
 is shown below:
 
 ```elixir
 config :plug_content_security_policy,
-  nonces_for: nil
+  nonces_for: nil,
   directives: %{
     default_src: ~w('none'),
     connect_src: ~w('self'),
