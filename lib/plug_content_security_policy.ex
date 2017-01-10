@@ -1,6 +1,7 @@
 defmodule PlugContentSecurityPolicy do
   import Plug.Conn
 
+  @app_name :plug_content_security_policy
   @behaviour Plug
 
   @moduledoc """
@@ -39,8 +40,8 @@ defmodule PlugContentSecurityPolicy do
 
   defp default_config do
     %{
-      nonces_for: Application.get_env(:plug_content_security_policy, :nonces_for),
-      directives: Application.get_env(:plug_content_security_policy, :directives, %{
+      nonces_for: Application.get_env(@app_name, :nonces_for),
+      directives: Application.get_env(@app_name, :directives, %{
         default_src: ~w('none'),
         connect_src: ~w('self'),
         child_src: ~w('self'),
