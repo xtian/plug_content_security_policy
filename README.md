@@ -54,7 +54,9 @@ config :plug_content_security_policy,
   }
 ```
 
-Please see the CSP spec for [a full list of directives][directives].
+Values should be passed to each directive as a list of strings.
+Please see the CSP spec for
+[a full list of directives and valid attributes][directives].
 
 To request that a nonce be generated for a directive, pass its key
 to `nonces_for`:
