@@ -2,7 +2,7 @@ defmodule PlugContentSecurityPolicy.Mixfile do
   use Mix.Project
 
   @github_url "https://github.com/xtian/plug_content_security_policy"
-  @version "0.1.0"
+  @version "0.1.1"
 
   def project do
     [
