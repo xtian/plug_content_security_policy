@@ -1,5 +1,8 @@
 # PlugContentSecurityPolicy
 
+[![Build Status](https://secure.travis-ci.org/xtian/plug_content_security_policy.svg?branch=master
+"Build Status")](https://travis-ci.org/xtian/plug_content_security_policy)
+
 This is a [Plug][plug] module for inserting a [Content Security Policy][csp]
 header into the response. It supports generating nonces for inline `<script>`
 and `<style>` tags [as specified in CSP Level 2][nonces].
