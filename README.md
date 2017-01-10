@@ -71,6 +71,6 @@ config :plug_content_security_policy,
 [nonces]: https://www.w3.org/TR/CSP2/#script-src-nonce-usage
 [plug]: https://github.com/elixir-lang/plug
 
-## Licence
+## License
 
 [ISC](LICENSE.md)
