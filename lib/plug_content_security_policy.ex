@@ -5,18 +5,8 @@ defmodule PlugContentSecurityPolicy do
 
   @moduledoc false
 
-  @nonces_for Application.get_env(:plug_content_security_policy, :nonces_for)
-  @directives Application.get_env(:plug_content_security_policy, :directives, %{
-    default_src: ~w('none'),
-    connect_src: ~w('self'),
-    child_src: ~w('self'),
-    img_src: ~w('self'),
-    script_src: ~w('self'),
-    style_src: ~w('self')
-  })
-
   @spec init(map | keyword) :: String.t | map | keyword
-  def init([]), do: init(%{directives: @directives, nonces_for: @nonces_for})
+  def init([]), do: init(default_config())
   def init(config) do
     if needs_nonce?(config), do: config, else: build_header(config.directives)
   end
@@ -35,6 +25,20 @@ defmodule PlugContentSecurityPolicy do
 
   defp convert_tuple({k, v}) when is_atom(k), do: convert_tuple({Atom.to_string(k), v})
   defp convert_tuple({k, v}), do: "#{String.replace(k, "_", "-")} #{Enum.join(v, " ")}"
+
+  defp default_config do
+    %{
+      nonces_for: Application.get_env(:plug_content_security_policy, :nonces_for),
+      directives: Application.get_env(:plug_content_security_policy, :directives, %{
+        default_src: ~w('none'),
+        connect_src: ~w('self'),
+        child_src: ~w('self'),
+        img_src: ~w('self'),
+        script_src: ~w('self'),
+        style_src: ~w('self')
+      })
+    }
+  end
 
   defp generate_nonce, do: 32 |> :crypto.strong_rand_bytes |> Base.encode64
 
