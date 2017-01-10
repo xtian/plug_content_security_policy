@@ -73,4 +73,4 @@ config :plug_content_security_policy,
 
 ## Licence
 
-[ISC](LICENSE)
+[ISC](LICENSE.md)
