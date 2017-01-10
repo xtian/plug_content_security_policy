@@ -3,8 +3,19 @@ defmodule PlugContentSecurityPolicy do
 
   @behaviour Plug
 
-  @moduledoc false
+  @moduledoc """
+  A Plug module for inserting a Content Security Policy header into the
+  response. Supports generating nonces as specified in CSP Level 2.
+  """
 
+  @doc """
+  Accepts the following options:
+
+  - `:directives`: Map of CSP directives with values as lists of strings
+  - `:nonces_for`: List of CSP directive keys to generate nonces for
+
+  See [README](./readme.html#usage) for usage details.
+  """
   @spec init(map | keyword) :: String.t | map | keyword
   def init([]), do: init(default_config())
   def init(config) do
