@@ -8,7 +8,7 @@ defmodule PlugContentSecurityPolicy do
   @spec init(map | keyword) :: String.t | map | keyword
   def init([]), do: init(default_config())
   def init(config) do
-    if needs_nonce?(config), do: config, else: build_header(config.directives)
+    if needs_nonce?(config), do: config, else: build_header(config[:directives])
   end
 
   @spec call(Plug.Conn.t, String.t | map | keyword) :: Plug.Conn.t

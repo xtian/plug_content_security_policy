@@ -13,7 +13,7 @@ defmodule PlugContentSecurityPolicyTest do
         script_src: ~w('self' 'unsafe-inline')
       }
 
-      directive = PlugContentSecurityPolicy.init(%{directives: directives})
+      directive = PlugContentSecurityPolicy.init(directives: directives)
       assert directive == "default-src 'none'; script-src 'self' 'unsafe-inline';"
     end
 
