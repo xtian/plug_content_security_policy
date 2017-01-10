@@ -20,6 +20,7 @@ defmodule PlugContentSecurityPolicy.Mixfile do
       # Docs
       name: "PlugContentSecurityPolicy",
       docs: [
+        main: "readme",
         extras: ["README.md"],
         source_ref: "v#{@version}",
         source_url: @github_url
