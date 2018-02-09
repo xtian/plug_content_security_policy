@@ -8,15 +8,19 @@ This is a [Plug][plug] module for inserting a [Content Security Policy][csp]
 header into the response. It supports generating nonces for inline `<script>`
 and `<style>` tags [as specified in CSP Level 2][nonces].
 
-## Usage
+## Installation
 
-Add `plug_content_security_policy` to your list of dependencies in `mix.exs`:
+Add `plug_content_security_policy` to the list of dependencies in your `mix.exs`:
 
 ```elixir
 def deps do
-  [{:plug_content_security_policy, "~> 0.1.0"}]
+  [
+    {:plug_content_security_policy, "~> 0.1.0"}
+  ]
 end
 ```
+
+## Usage
 
 Add the `PlugContentSecurityPolicy` module to your pipeline:
 
