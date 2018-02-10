@@ -17,14 +17,24 @@ defmodule PlugContentSecurityPolicy do
 
   See [README](./readme.html#usage) for usage details.
   """
-  @spec init(map | keyword) :: String.t | map | keyword
-  def init([]), do: init(default_config())
-  def init(config) do
-    if needs_nonce?(config), do: config, else: build_header(config[:directives])
+  @spec init(map | keyword) :: String.t() | map | keyword
+  def init([]) do
+    init(default_config())
   end
 
-  @spec call(Plug.Conn.t, String.t | map | keyword) :: Plug.Conn.t
-  def call(conn, value) when is_binary(value), do: put_resp_header(conn, "content-security-policy", value)
+  def init(config) do
+    if needs_nonce?(config) do
+      config
+    else
+      build_header(config[:directives])
+    end
+  end
+
+  @spec call(Plug.Conn.t(), String.t() | map | keyword) :: Plug.Conn.t()
+  def call(conn, value) when is_binary(value) do
+    put_resp_header(conn, "content-security-policy", value)
+  end
+
   def call(conn, config) do
     directives = config[:directives] || %{}
     nonces_for = config[:nonces_for] || []
@@ -33,7 +43,9 @@ defmodule PlugContentSecurityPolicy do
     call(conn, build_header(directives))
   end
 
-  defp build_header(map), do: Enum.map_join(map, "; ", &convert_tuple/1) <> ";"
+  defp build_header(map) do
+    Enum.map_join(map, "; ", &convert_tuple/1) <> ";"
+  end
 
   defp convert_tuple({k, v}) when is_atom(k), do: convert_tuple({Atom.to_string(k), v})
   defp convert_tuple({k, v}), do: "#{String.replace(k, "_", "-")} #{Enum.join(v, " ")}"
@@ -41,20 +53,26 @@ defmodule PlugContentSecurityPolicy do
   defp default_config do
     %{
       nonces_for: Application.get_env(@app_name, :nonces_for),
-      directives: Application.get_env(@app_name, :directives, %{
-        default_src: ~w('none'),
-        connect_src: ~w('self'),
-        child_src: ~w('self'),
-        img_src: ~w('self'),
-        script_src: ~w('self'),
-        style_src: ~w('self')
-      })
+      directives:
+        Application.get_env(@app_name, :directives, %{
+          default_src: ~w('none'),
+          connect_src: ~w('self'),
+          child_src: ~w('self'),
+          img_src: ~w('self'),
+          script_src: ~w('self'),
+          style_src: ~w('self')
+        })
     }
   end
 
-  defp generate_nonce, do: 32 |> :crypto.strong_rand_bytes |> Base.encode64
+  defp generate_nonce do
+    32 |> :crypto.strong_rand_bytes() |> Base.encode64()
+  end
 
-  defp insert_nonces(conn, directives, []), do: {conn, directives}
+  defp insert_nonces(conn, directives, []) do
+    {conn, directives}
+  end
+
   defp insert_nonces(conn, directives, [key | nonces_for]) do
     nonce = generate_nonce()
     nonce_attr = "'nonce-#{nonce}'"

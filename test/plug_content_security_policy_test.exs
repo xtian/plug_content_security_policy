@@ -34,11 +34,12 @@ defmodule PlugContentSecurityPolicyTest do
     end
 
     test "generates nonces if required", %{conn: conn} do
-      conn = PlugContentSecurityPolicy.call(
-        conn,
-        nonces_for: [:script_src, :style_src],
-        directives: %{script_src: ~w('none')}
-      )
+      conn =
+        PlugContentSecurityPolicy.call(
+          conn,
+          nonces_for: [:script_src, :style_src],
+          directives: %{script_src: ~w('none')}
+        )
 
       [header] = get_resp_header(conn, "content-security-policy")
 

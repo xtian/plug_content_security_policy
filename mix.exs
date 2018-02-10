@@ -9,8 +9,8 @@ defmodule PlugContentSecurityPolicy.Mixfile do
       app: :plug_content_security_policy,
       version: @version,
       elixir: "~> 1.3",
-      build_embedded: Mix.env == :prod,
-      start_permanent: Mix.env == :prod,
+      build_embedded: Mix.env() == :prod,
+      start_permanent: Mix.env() == :prod,
       deps: deps(),
 
       # Hex
