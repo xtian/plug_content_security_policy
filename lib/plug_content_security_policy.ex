@@ -18,7 +18,7 @@ defmodule PlugContentSecurityPolicy do
 
   See [README](./readme.html#usage) for usage details.
   """
-  @spec init(map | keyword) :: String.t() | map | keyword
+  @spec init(Plug.opts()) :: Plug.opts()
   def init([]) do
     init(default_config())
   end
@@ -31,7 +31,7 @@ defmodule PlugContentSecurityPolicy do
     end
   end
 
-  @spec call(Conn.t(), String.t() | map | keyword) :: Conn.t()
+  @spec call(Conn.t(), Plug.opts()) :: Conn.t()
   def call(conn, value) when is_binary(value) do
     Conn.put_resp_header(conn, "content-security-policy", value)
   end
