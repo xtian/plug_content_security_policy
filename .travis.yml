@@ -10,7 +10,4 @@ env:
   MIX_ENV=test
 
 script:
-  - mix compile --all-warnings --warnings-as-errors
-  - mix format --check-formatted
-  - mix credo --strict
-  - mix test
+  - bin/test
