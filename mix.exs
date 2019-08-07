@@ -34,7 +34,7 @@ defmodule PlugContentSecurityPolicy.Mixfile do
 
   defp deps do
     [
-      {:credo, "~> 0.5", only: [:dev, :test]},
+      {:credo, "~> 1.1", only: [:dev, :test]},
       {:ex_doc, ">= 0.0.0", only: :dev},
       {:plug, "~> 1.3"}
     ]
