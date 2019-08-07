@@ -24,17 +24,27 @@ defmodule PlugContentSecurityPolicy.Mixfile do
         extras: ["README.md"],
         source_ref: "v#{@version}",
         source_url: @github_url
+      ],
+      dialyzer: [
+        flags: [
+          :error_handling,
+          :race_conditions,
+          :unmatched_returns
+        ],
+        ignore_warnings: "config/dialyzer_ignore.exs"
       ]
     ]
   end
 
   def application do
-    [applications: [:logger]]
+    [applications: [:logger, :plug]]
   end
 
   defp deps do
     [
-      {:credo, "~> 0.5", only: [:dev, :test]},
+      {:credo, "~> 1.1", only: [:dev, :test]},
+      {:credo_contrib, "~> 0.1", only: [:dev, :test]},
+      {:dialyxir, "~> 1.0-rc", only: [:dev, :test]},
       {:ex_doc, ">= 0.0.0", only: :dev},
       {:plug, "~> 1.3"}
     ]

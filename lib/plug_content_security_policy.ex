@@ -1,13 +1,14 @@
 defmodule PlugContentSecurityPolicy do
-  import Plug.Conn
-
-  @app_name :plug_content_security_policy
-  @behaviour Plug
-
   @moduledoc """
   A Plug module for inserting a Content Security Policy header into the
   response. Supports generating nonces as specified in CSP Level 2.
   """
+
+  @behaviour Plug
+
+  alias Plug.Conn
+
+  @app_name :plug_content_security_policy
 
   @doc """
   Accepts the following options:
@@ -19,6 +20,7 @@ defmodule PlugContentSecurityPolicy do
 
   See [README](./readme.html#usage) for usage details.
   """
+
   @spec init(Plug.opts()) :: {String.t(), String.t()} | Plug.opts()
   def init([]), do: init(default_config())
 
@@ -32,9 +34,9 @@ defmodule PlugContentSecurityPolicy do
     end
   end
 
-  @spec call(Plug.Conn.t(), String.t() | map | keyword) :: Plug.Conn.t()
+  @spec call(Conn.t(), Plug.opts()) :: Conn.t()
   def call(conn, value) when is_binary(value) do
-    put_resp_header(conn, "content-security-policy", value)
+    Conn.put_resp_header(conn, "content-security-policy", value)
   end
 
   def call(conn, config) do
@@ -84,7 +86,7 @@ defmodule PlugContentSecurityPolicy do
     directives = Map.update(directives, key, [nonce_attr], &[nonce_attr | &1])
 
     conn
-    |> assign(nonce_var(key), nonce)
+    |> Conn.assign(nonce_var(key), nonce)
     |> insert_nonces(directives, nonces_for)
   end
 
