@@ -41,6 +41,19 @@ If nonces are requested for any directives, they will be available in the
 `conn.assigns[:style_src_nonce]` — and the nonce will be inserted into the
 CSP header.
 
+### Report-Only Mode
+
+In order to use the [report-only header][report-only], set `report_only: true`
+in your config and provide a `report_uri`:
+
+```elixir
+config :plug_content_security_policy,
+  report_only: false,
+  directives: %{
+    report_uri: "/csp-violation-report-endpoint/"
+  }
+```
+
 ## Configuration
 
 You can configure the CSP directives using Mix. The default configuration
@@ -48,7 +61,8 @@ is shown below:
 
 ```elixir
 config :plug_content_security_policy,
-  nonces_for: nil,
+  nonces_for: [],
+  report_only: false,
   directives: %{
     default_src: ~w('none'),
     connect_src: ~w('self'),
@@ -75,6 +89,7 @@ config :plug_content_security_policy,
 [directives]: https://www.w3.org/TR/CSP2/#directives
 [nonces]: https://www.w3.org/TR/CSP2/#script-src-nonce-usage
 [plug]: https://github.com/elixir-lang/plug
+[report-only]: https://www.w3.org/TR/CSP2/#content-security-policy-report-only-header-field
 
 ## Development
 
