@@ -1,13 +1,14 @@
 defmodule PlugContentSecurityPolicy do
-  import Plug.Conn
-
-  @app_name :plug_content_security_policy
-  @behaviour Plug
-
   @moduledoc """
   A Plug module for inserting a Content Security Policy header into the
   response. Supports generating nonces as specified in CSP Level 2.
   """
+
+  @behaviour Plug
+
+  import Plug.Conn
+
+  @app_name :plug_content_security_policy
 
   @doc """
   Accepts the following options:
