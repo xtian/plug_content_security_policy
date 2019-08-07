@@ -63,14 +63,10 @@ defmodule PlugContentSecurityPolicy do
     end
   end
 
-  defp convert_tuple({k, v}) when is_atom(k), do: convert_tuple({Atom.to_string(k), v})
-
-  defp convert_tuple({k, v}) do
-    "#{String.replace(k, "_", "-")} #{Enum.map_join(v, " ", &convert_value/1)}"
+  defp convert_tuple({key, value}) do
+    key = key |> to_string() |> String.replace("_", "-")
+    "#{key} #{Enum.join(value, " ")}"
   end
-
-  defp convert_value(v) when is_atom(v), do: "'#{v}'"
-  defp convert_value(v), do: v
 
   defp default_config do
     %{
