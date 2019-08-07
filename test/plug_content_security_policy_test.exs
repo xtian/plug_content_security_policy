@@ -63,7 +63,12 @@ defmodule PlugContentSecurityPolicyTest do
     end
 
     test "only assigns required nonce", %{conn: conn} do
-      conn = PlugContentSecurityPolicy.call(conn, %{directives: %{}, nonces_for: [:style_src], report_only: false})
+      conn =
+        PlugContentSecurityPolicy.call(conn, %{
+          directives: %{},
+          nonces_for: [:style_src],
+          report_only: false
+        })
 
       refute conn.assigns[:script_src_nonce]
     end
