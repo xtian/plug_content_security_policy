@@ -48,7 +48,7 @@ in your config and provide a `report_uri`:
 
 ```elixir
 config :plug_content_security_policy,
-  report_only: false,
+  report_only: true,
   directives: %{
     report_uri: "/csp-violation-report-endpoint/"
   }
