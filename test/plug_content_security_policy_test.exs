@@ -2,6 +2,8 @@ defmodule PlugContentSecurityPolicyTest do
   use ExUnit.Case, async: true
   use Plug.Test
 
+  alias PlugContentSecurityPolicy, as: PlugCSP
+
   setup do
     {:ok, conn: conn(:get, "/")}
   end
@@ -13,22 +15,26 @@ defmodule PlugContentSecurityPolicyTest do
         script_src: ~w('self' 'unsafe-inline')
       }
 
-      directive = PlugContentSecurityPolicy.init(directives: directives)
+      pre_built = PlugCSP.init(directives: directives)
 
-      assert directive ==
+      assert pre_built ==
                {"content-security-policy",
                 "default-src 'none'; script-src 'self' 'unsafe-inline';"}
 
-      directive = PlugContentSecurityPolicy.init(directives: directives, report_only: true)
+      pre_built =
+        PlugCSP.init(
+          directives: %{report_uri: "/csp-violation-report-endpoint/"},
+          report_only: true
+        )
 
-      assert directive ==
+      assert pre_built ==
                {"content-security-policy-report-only",
-                "default-src 'none'; script-src 'self' 'unsafe-inline';"}
+                "report-uri /csp-violation-report-endpoint/;"}
     end
 
     test "merges defaults with provided config" do
       config = %{nonces_for: [:script_src]}
-      new_config = PlugContentSecurityPolicy.init(config)
+      new_config = PlugCSP.init(config)
 
       assert new_config.nonces_for == config.nonces_for
       assert new_config.directives
@@ -37,8 +43,8 @@ defmodule PlugContentSecurityPolicyTest do
 
   describe ".call/2" do
     test "sets the CSP header if pre-generated", %{conn: conn} do
-      opts = PlugContentSecurityPolicy.init(directives: %{default_src: ~w('none')})
-      conn = PlugContentSecurityPolicy.call(conn, opts)
+      opts = PlugCSP.init(directives: %{default_src: ~w('none')})
+      conn = PlugCSP.call(conn, opts)
 
       assert get_resp_header(conn, "content-security-policy") == ["default-src 'none';"]
       refute conn.assigns[:script_src_nonce]
@@ -47,7 +53,7 @@ defmodule PlugContentSecurityPolicyTest do
 
     test "generates nonces if required", %{conn: conn} do
       conn =
-        PlugContentSecurityPolicy.call(
+        PlugCSP.call(
           conn,
           %{
             directives: %{script_src: ~w('none')},
@@ -64,7 +70,7 @@ defmodule PlugContentSecurityPolicyTest do
 
     test "only assigns required nonce", %{conn: conn} do
       conn =
-        PlugContentSecurityPolicy.call(conn, %{
+        PlugCSP.call(conn, %{
           directives: %{},
           nonces_for: [:style_src],
           report_only: false

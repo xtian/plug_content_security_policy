@@ -65,7 +65,7 @@ defmodule PlugContentSecurityPolicy do
 
   defp convert_tuple({key, value}) do
     key = key |> to_string() |> String.replace("_", "-")
-    "#{key} #{Enum.join(value, " ")}"
+    "#{key} #{value |> List.wrap() |> Enum.join(" ")}"
   end
 
   defp default_config do
