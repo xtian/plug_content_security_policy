@@ -76,7 +76,9 @@ defmodule PlugContentSecurityPolicy do
     }
   end
 
-  defp generate_nonce, do: Base.url_encode64(:crypto.strong_rand_bytes(32), padding: false)
+  defp generate_nonce do
+    32 |> :crypto.strong_rand_bytes() |> Base.url_encode64(padding: false)
+  end
 
   defp insert_nonces(conn, directives, []), do: {conn, directives}
 
