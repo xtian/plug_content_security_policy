@@ -6,7 +6,7 @@ defmodule PlugContentSecurityPolicy do
 
   @behaviour Plug
 
-  import Plug.Conn
+  alias Plug.Conn
 
   @app_name :plug_content_security_policy
 
@@ -31,9 +31,9 @@ defmodule PlugContentSecurityPolicy do
     end
   end
 
-  @spec call(Plug.Conn.t(), String.t() | map | keyword) :: Plug.Conn.t()
+  @spec call(Conn.t(), String.t() | map | keyword) :: Conn.t()
   def call(conn, value) when is_binary(value) do
-    put_resp_header(conn, "content-security-policy", value)
+    Conn.put_resp_header(conn, "content-security-policy", value)
   end
 
   def call(conn, config) do
@@ -79,7 +79,7 @@ defmodule PlugContentSecurityPolicy do
     nonce_attr = "'nonce-#{nonce}'"
     directives = Map.update(directives, key, [nonce_attr], &[nonce_attr | &1])
 
-    insert_nonces(assign(conn, :"#{key}_nonce", nonce), directives, nonces_for)
+    conn |> Conn.assign(:"#{key}_nonce", nonce) |> insert_nonces(directives, nonces_for)
   end
 
   defp needs_nonce?(%{nonces_for: [_ | _]}), do: true
