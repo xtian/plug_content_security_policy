@@ -39,7 +39,7 @@ defmodule PlugContentSecurityPolicy do
   end
 
   def init(_) do
-    Logger.warn("#{__MODULE__}: Invalid config, using defaults")
+    _ = Logger.warn("#{__MODULE__}: Invalid config, using defaults")
     init(%{})
   end
 
