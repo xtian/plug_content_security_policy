@@ -12,6 +12,9 @@ defmodule PlugContentSecurityPolicy do
 
   @app_name :plug_content_security_policy
 
+  @default_field "content-security-policy"
+  @report_field "content-security-policy-report-only"
+
   @doc """
   Accepts the following options:
 
@@ -31,7 +34,7 @@ defmodule PlugContentSecurityPolicy do
   def init(%{} = config) do
     case Map.merge(default_config(), config) do
       %{nonces_for: [_ | _]} = config -> config
-      config -> {header(config), build_header(config)}
+      config -> build_header(config)
     end
   end
 
@@ -41,17 +44,24 @@ defmodule PlugContentSecurityPolicy do
   end
 
   @spec call(Conn.t(), Plug.opts()) :: Conn.t()
-  def call(conn, value) when is_binary(value) do
-    Conn.put_resp_header(conn, "content-security-policy", value)
+  def call(conn, {field_name, value}) when field_name in [@default_field, @report_field] do
+    Conn.put_resp_header(conn, field_name, value)
   end
 
-  def call(conn, config) do
+  def call(conn, %{} = config) do
     {conn, directives} = insert_nonces(conn, config.directives, config.nonces_for)
-    call(conn, build_header(directives))
+    call(conn, build_header(%{config | directives: directives}))
   end
 
-  defp build_header(%{directives: directives}), do: build_header(directives)
-  defp build_header(map), do: Enum.map_join(map, "; ", &convert_tuple/1) <> ";"
+  defp build_header(config) do
+    field_value = Enum.map_join(config.directives, "; ", &convert_tuple/1) <> ";"
+
+    if config.report_only do
+      {@report_field, field_value}
+    else
+      {@default_field, field_value}
+    end
+  end
 
   defp convert_tuple({k, v}) when is_atom(k), do: convert_tuple({Atom.to_string(k), v})
   defp convert_tuple({k, v}) when not is_list(v), do: convert_tuple({k, [v]})
@@ -67,6 +77,7 @@ defmodule PlugContentSecurityPolicy do
   defp default_config do
     %{
       nonces_for: Application.get_env(@app_name, :nonces_for, []),
+      report_only: false,
       directives:
         Application.get_env(@app_name, :directives, %{
           default_src: ~w('none'),
@@ -94,7 +105,4 @@ defmodule PlugContentSecurityPolicy do
     |> Conn.assign(:"#{key}_nonce", nonce)
     |> insert_nonces(directives, nonces_for)
   end
-
-  defp header(%{report_only: true}), do: "content-security-policy-report-only"
-  defp header(_), do: "content-security-policy"
 end

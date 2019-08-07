@@ -18,6 +18,12 @@ defmodule PlugContentSecurityPolicyTest do
       assert directive ==
                {"content-security-policy",
                 "default-src 'none'; script-src 'self' 'unsafe-inline';"}
+
+      directive = PlugContentSecurityPolicy.init(directives: directives, report_only: true)
+
+      assert directive ==
+               {"content-security-policy-report-only",
+                "default-src 'none'; script-src 'self' 'unsafe-inline';"}
     end
 
     test "merges defaults with provided config" do
@@ -31,7 +37,8 @@ defmodule PlugContentSecurityPolicyTest do
 
   describe ".call/2" do
     test "sets the CSP header if pre-generated", %{conn: conn} do
-      conn = PlugContentSecurityPolicy.call(conn, "default-src 'none';")
+      opts = PlugContentSecurityPolicy.init(directives: %{default_src: ~w('none')})
+      conn = PlugContentSecurityPolicy.call(conn, opts)
 
       assert get_resp_header(conn, "content-security-policy") == ["default-src 'none';"]
       refute conn.assigns[:script_src_nonce]
@@ -43,8 +50,9 @@ defmodule PlugContentSecurityPolicyTest do
         PlugContentSecurityPolicy.call(
           conn,
           %{
+            directives: %{script_src: ~w('none')},
             nonces_for: [:script_src, :style_src],
-            directives: %{script_src: ~w('none')}
+            report_only: false
           }
         )
 
@@ -55,7 +63,7 @@ defmodule PlugContentSecurityPolicyTest do
     end
 
     test "only assigns required nonce", %{conn: conn} do
-      conn = PlugContentSecurityPolicy.call(conn, %{directives: %{}, nonces_for: [:style_src]})
+      conn = PlugContentSecurityPolicy.call(conn, %{directives: %{}, nonces_for: [:style_src], report_only: false})
 
       refute conn.assigns[:script_src_nonce]
     end
