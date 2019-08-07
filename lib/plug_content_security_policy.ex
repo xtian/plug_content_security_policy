@@ -21,7 +21,7 @@ defmodule PlugContentSecurityPolicy do
   See [README](./readme.html#usage) for usage details.
   """
 
-  @spec init(Plug.opts()) :: {String.t(), String.t()} | Plug.opts()
+  @spec init(Plug.opts()) :: Plug.opts()
   def init([]), do: init(default_config())
 
   def init(config) when is_list(config), do: init(Map.new(config))
