@@ -15,19 +15,22 @@ defmodule PlugContentSecurityPolicy do
 
   - `:directives`: Map of CSP directives with values as lists of strings
   - `:nonces_for`: List of CSP directive keys to generate nonces for
+  - `:report_only`: Use the `content-security-policy-report-only` header
+    instead of the `content-security-policy` header.
 
   See [README](./readme.html#usage) for usage details.
   """
-  @spec init(Plug.opts()) :: Plug.opts()
-  def init([]) do
-    init(default_config())
-  end
 
-  def init(config) do
+  @spec init(Plug.opts()) :: {String.t(), String.t()} | Plug.opts()
+  def init([]), do: init(default_config())
+
+  def init(config) when is_list(config), do: init(Map.new(config))
+
+  def init(%{} = config) do
     if needs_nonce?(config) do
       config
     else
-      build_header(config[:directives])
+      {header(config), build_header(config)}
     end
   end
 
@@ -44,12 +47,19 @@ defmodule PlugContentSecurityPolicy do
     call(conn, build_header(directives))
   end
 
-  defp build_header(map) do
-    Enum.map_join(map, "; ", &convert_tuple/1) <> ";"
-  end
+  defp build_header(%{directives: directives}), do: build_header(directives)
+  defp build_header(map), do: Enum.map_join(map, "; ", &convert_tuple/1) <> ";"
 
   defp convert_tuple({k, v}) when is_atom(k), do: convert_tuple({Atom.to_string(k), v})
-  defp convert_tuple({k, v}), do: "#{String.replace(k, "_", "-")} #{Enum.join(v, " ")}"
+  defp convert_tuple({k, v}) when not is_list(v), do: convert_tuple({k, [v]})
+
+  defp convert_tuple({k, v}) do
+    v = Enum.reject(v, &is_nil/1)
+    "#{String.replace(k, "_", "-")} #{Enum.map_join(v, " ", &convert_value/1)}"
+  end
+
+  defp convert_value(v) when is_atom(v), do: "'#{v}'"
+  defp convert_value(v), do: v
 
   defp default_config do
     %{
@@ -66,22 +76,28 @@ defmodule PlugContentSecurityPolicy do
     }
   end
 
-  defp generate_nonce do
-    32 |> :crypto.strong_rand_bytes() |> Base.encode64()
-  end
+  defp generate_nonce, do: Base.url_encode64(:crypto.strong_rand_bytes(32), padding: false)
 
-  defp insert_nonces(conn, directives, []) do
-    {conn, directives}
-  end
+  defp insert_nonces(conn, directives, []), do: {conn, directives}
 
   defp insert_nonces(conn, directives, [key | nonces_for]) do
     nonce = generate_nonce()
     nonce_attr = "'nonce-#{nonce}'"
     directives = Map.update(directives, key, [nonce_attr], &[nonce_attr | &1])
 
-    conn |> Conn.assign(:"#{key}_nonce", nonce) |> insert_nonces(directives, nonces_for)
+    conn
+    |> Conn.assign(nonce_var(key), nonce)
+    |> insert_nonces(directives, nonces_for)
   end
+
+  # This is unsafe, and will be replaced soon-ish with explicit key/directive
+  # support.
+  # credo:disable-for-lines:1 Credo.Check.Warning.UnsafeToAtom
+  defp nonce_var(key), do: :"#{key}_nonce"
 
   defp needs_nonce?(%{nonces_for: [_ | _]}), do: true
   defp needs_nonce?(_), do: false
+
+  defp header(%{report_only: true}), do: "content-security-policy-report-only"
+  defp header(_), do: "content-security-policy"
 end

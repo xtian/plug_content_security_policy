@@ -14,7 +14,10 @@ defmodule PlugContentSecurityPolicyTest do
       }
 
       directive = PlugContentSecurityPolicy.init(directives: directives)
-      assert directive == "default-src 'none'; script-src 'self' 'unsafe-inline';"
+
+      assert directive ==
+               {"content-security-policy",
+                "default-src 'none'; script-src 'self' 'unsafe-inline';"}
     end
 
     test "returns directives unchanged if nonce is required" do
