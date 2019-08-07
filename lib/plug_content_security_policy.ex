@@ -8,6 +8,8 @@ defmodule PlugContentSecurityPolicy do
 
   alias Plug.Conn
 
+  require Logger
+
   @app_name :plug_content_security_policy
 
   @doc """
@@ -22,16 +24,20 @@ defmodule PlugContentSecurityPolicy do
   """
 
   @spec init(Plug.opts()) :: Plug.opts()
-  def init([]), do: init(default_config())
-
-  def init(config) when is_list(config), do: init(Map.new(config))
+  def init(config) when is_list(config) do
+    config |> Map.new() |> init()
+  end
 
   def init(%{} = config) do
-    if needs_nonce?(config) do
-      config
-    else
-      {header(config), build_header(config)}
+    case Map.merge(default_config(), config) do
+      %{nonces_for: [_ | _]} = config -> config
+      config -> {header(config), build_header(config)}
     end
+  end
+
+  def init(_) do
+    Logger.warn("#{__MODULE__}: Invalid config, using defaults")
+    init(default_config())
   end
 
   @spec call(Conn.t(), Plug.opts()) :: Conn.t()
@@ -40,10 +46,7 @@ defmodule PlugContentSecurityPolicy do
   end
 
   def call(conn, config) do
-    directives = config[:directives] || %{}
-    nonces_for = config[:nonces_for] || []
-    {conn, directives} = insert_nonces(conn, directives, nonces_for)
-
+    {conn, directives} = insert_nonces(conn, config.directives, config.nonces_for)
     call(conn, build_header(directives))
   end
 
@@ -63,7 +66,7 @@ defmodule PlugContentSecurityPolicy do
 
   defp default_config do
     %{
-      nonces_for: Application.get_env(@app_name, :nonces_for),
+      nonces_for: Application.get_env(@app_name, :nonces_for, []),
       directives:
         Application.get_env(@app_name, :directives, %{
           default_src: ~w('none'),
@@ -91,9 +94,6 @@ defmodule PlugContentSecurityPolicy do
     |> Conn.assign(:"#{key}_nonce", nonce)
     |> insert_nonces(directives, nonces_for)
   end
-
-  defp needs_nonce?(%{nonces_for: [_ | _]}), do: true
-  defp needs_nonce?(_), do: false
 
   defp header(%{report_only: true}), do: "content-security-policy-report-only"
   defp header(_), do: "content-security-policy"
