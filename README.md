@@ -78,6 +78,12 @@ config :plug_content_security_policy,
 
 ## Development
 
+### Setup
+
+```
+bin/setup
+```
+
 ### Running the tests
 
 ```
