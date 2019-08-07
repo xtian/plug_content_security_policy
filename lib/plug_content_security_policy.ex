@@ -40,7 +40,7 @@ defmodule PlugContentSecurityPolicy do
 
   def init(_) do
     Logger.warn("#{__MODULE__}: Invalid config, using defaults")
-    init(default_config())
+    init(%{})
   end
 
   @spec call(Conn.t(), Plug.opts()) :: Conn.t()
