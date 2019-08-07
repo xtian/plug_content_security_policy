@@ -8,10 +8,18 @@ defmodule PlugContentSecurityPolicy.Mixfile do
     [
       app: :plug_content_security_policy,
       version: @version,
-      elixir: "~> 1.3",
+      elixir: "~> 1.6",
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       deps: deps(),
+      dialyzer: [
+        flags: [
+          :error_handling,
+          :race_conditions,
+          :unmatched_returns
+        ],
+        ignore_warnings: "config/dialyzer_ignore.exs"
+      ],
 
       # Hex
       description: description(),
@@ -24,27 +32,19 @@ defmodule PlugContentSecurityPolicy.Mixfile do
         extras: ["README.md"],
         source_ref: "v#{@version}",
         source_url: @github_url
-      ],
-      dialyzer: [
-        flags: [
-          :error_handling,
-          :race_conditions,
-          :unmatched_returns
-        ],
-        ignore_warnings: "config/dialyzer_ignore.exs"
       ]
     ]
   end
 
   def application do
-    [applications: [:logger, :plug]]
+    [extra_applications: [:logger]]
   end
 
   defp deps do
     [
-      {:credo, "~> 1.1", only: [:dev, :test]},
-      {:credo_contrib, "~> 0.1", only: [:dev, :test]},
-      {:dialyxir, "~> 1.0-rc", only: [:dev, :test]},
+      {:credo, "~> 1.1", only: [:dev, :test], runtime: false},
+      {:credo_contrib, "~> 0.1", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.0-rc", only: [:dev, :test], runtime: false},
       {:ex_doc, ">= 0.0.0", only: :dev},
       {:plug, "~> 1.3"}
     ]
