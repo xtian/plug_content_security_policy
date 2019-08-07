@@ -86,14 +86,9 @@ defmodule PlugContentSecurityPolicy do
     directives = Map.update(directives, key, [nonce_attr], &[nonce_attr | &1])
 
     conn
-    |> Conn.assign(nonce_var(key), nonce)
+    |> Conn.assign(:"#{key}_nonce", nonce)
     |> insert_nonces(directives, nonces_for)
   end
-
-  # This is unsafe, and will be replaced soon-ish with explicit key/directive
-  # support.
-  # credo:disable-for-lines:1 Credo.Check.Warning.UnsafeToAtom
-  defp nonce_var(key), do: :"#{key}_nonce"
 
   defp needs_nonce?(%{nonces_for: [_ | _]}), do: true
   defp needs_nonce?(_), do: false
