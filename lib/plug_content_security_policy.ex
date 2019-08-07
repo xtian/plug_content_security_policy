@@ -67,7 +67,6 @@ defmodule PlugContentSecurityPolicy do
   defp convert_tuple({k, v}) when not is_list(v), do: convert_tuple({k, [v]})
 
   defp convert_tuple({k, v}) do
-    v = Enum.reject(v, &is_nil/1)
     "#{String.replace(k, "_", "-")} #{Enum.map_join(v, " ", &convert_value/1)}"
   end
 
