@@ -105,5 +105,25 @@ defmodule PlugContentSecurityPolicyTest do
 
       assert log =~ "[warn]"
     end
+
+    test "logs warning if report_only is enabled with no report_uri directive ", %{conn: conn} do
+      log =
+        capture_log(fn ->
+          PlugCSP.call(conn, %{directives: %{}, nonces_for: [], report_only: true})
+        end)
+
+      assert log =~ "[warn]"
+
+      log =
+        capture_log(fn ->
+          PlugCSP.call(conn, %{
+            directives: %{report_uri: "http://example.com"},
+            nonces_for: [],
+            report_only: true
+          })
+        end)
+
+      assert log == ""
+    end
   end
 end

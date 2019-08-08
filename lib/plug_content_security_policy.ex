@@ -57,6 +57,11 @@ defmodule PlugContentSecurityPolicy do
     field_value = Enum.map_join(config.directives, "; ", &convert_tuple/1) <> ";"
 
     if config.report_only do
+      _ =
+        unless config.directives[:report_uri] do
+          Logger.warn("#{__MODULE__}: `report_only` enabled but no `report_uri` specified")
+        end
+
       {@report_field, field_value}
     else
       {@default_field, field_value}
