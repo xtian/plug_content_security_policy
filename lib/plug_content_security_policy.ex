@@ -19,7 +19,8 @@ defmodule PlugContentSecurityPolicy do
   Accepts the following options:
 
   - `:directives`: Map of CSP directives with values as lists of strings
-  - `:nonces_for`: List of CSP directive keys to generate nonces for
+  - `:nonces_for`: List of CSP directive keys for which to generate nonces
+    (valid keys: `:script_src`, `:style_src`)
   - `:report_only`: Set `#{@report_field}` header instead of `#{@default_field}`
 
   See [README](./readme.html#usage) for usage details.
