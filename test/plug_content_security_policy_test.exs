@@ -87,5 +87,16 @@ defmodule PlugContentSecurityPolicyTest do
 
       refute conn.assigns[:script_src_nonce]
     end
+
+    test "does not generate nonces for invalid keys", %{conn: conn} do
+      conn =
+        PlugCSP.call(conn, %{
+          directives: %{},
+          nonces_for: [:img_src],
+          report_only: false
+        })
+
+      refute conn.assigns[:img_src_nonce]
+    end
   end
 end

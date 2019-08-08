@@ -90,9 +90,13 @@ defmodule PlugContentSecurityPolicy do
     32 |> :crypto.strong_rand_bytes() |> Base.url_encode64(padding: false)
   end
 
-  defp insert_nonces(conn, directives, []), do: {conn, directives}
+  @valid_nonces [:script_src, :style_src]
 
-  defp insert_nonces(conn, directives, [key | nonces_for]) do
+  defp insert_nonces(conn, directives, []) do
+    {conn, directives}
+  end
+
+  defp insert_nonces(conn, directives, [key | nonces_for]) when key in @valid_nonces do
     nonce = generate_nonce()
     nonce_attr = "'nonce-#{nonce}'"
     directives = Map.update(directives, key, [nonce_attr], &[nonce_attr | &1])
@@ -100,5 +104,9 @@ defmodule PlugContentSecurityPolicy do
     conn
     |> Conn.assign(:"#{key}_nonce", nonce)
     |> insert_nonces(directives, nonces_for)
+  end
+
+  defp insert_nonces(conn, directives, [_ | nonces_for]) do
+    insert_nonces(conn, directives, nonces_for)
   end
 end
