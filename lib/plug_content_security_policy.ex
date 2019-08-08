@@ -106,7 +106,8 @@ defmodule PlugContentSecurityPolicy do
     |> insert_nonces(directives, nonces_for)
   end
 
-  defp insert_nonces(conn, directives, [_ | nonces_for]) do
+  defp insert_nonces(conn, directives, [key | nonces_for]) do
+    _ = Logger.warn("#{__MODULE__}: Invalid `nonces_for` value: #{inspect(key)}")
     insert_nonces(conn, directives, nonces_for)
   end
 end

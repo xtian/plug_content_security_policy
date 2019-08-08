@@ -2,6 +2,8 @@ defmodule PlugContentSecurityPolicyTest do
   use ExUnit.Case, async: true
   use Plug.Test
 
+  import ExUnit.CaptureLog
+
   alias PlugContentSecurityPolicy, as: PlugCSP
 
   setup do
@@ -42,7 +44,7 @@ defmodule PlugContentSecurityPolicyTest do
 
     test "logs warnings for invalid config" do
       log =
-        ExUnit.CaptureLog.capture_log(fn ->
+        capture_log(fn ->
           PlugCSP.init(:foo)
         end)
 
@@ -89,14 +91,19 @@ defmodule PlugContentSecurityPolicyTest do
     end
 
     test "does not generate nonces for invalid keys", %{conn: conn} do
-      conn =
-        PlugCSP.call(conn, %{
-          directives: %{},
-          nonces_for: [:img_src],
-          report_only: false
-        })
+      log =
+        capture_log(fn ->
+          conn =
+            PlugCSP.call(conn, %{
+              directives: %{},
+              nonces_for: [:img_src],
+              report_only: false
+            })
 
-      refute conn.assigns[:img_src_nonce]
+          refute conn.assigns[:img_src_nonce]
+        end)
+
+      assert log =~ "[warn]"
     end
   end
 end
