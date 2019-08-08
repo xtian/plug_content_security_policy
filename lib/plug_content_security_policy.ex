@@ -73,7 +73,7 @@ defmodule PlugContentSecurityPolicy do
   defp default_config do
     %{
       nonces_for: Application.get_env(@app_name, :nonces_for, []),
-      report_only: false,
+      report_only: Application.get_env(@app_name, :report_only, false),
       directives:
         Application.get_env(@app_name, :directives, %{
           default_src: ~w('none'),
