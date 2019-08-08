@@ -39,6 +39,15 @@ defmodule PlugContentSecurityPolicyTest do
       assert new_config.nonces_for == config.nonces_for
       assert new_config.directives
     end
+
+    test "logs warnings for invalid config" do
+      log =
+        ExUnit.CaptureLog.capture_log(fn ->
+          PlugCSP.init(:foo)
+        end)
+
+      assert log =~ "[warn]"
+    end
   end
 
   describe ".call/2" do
