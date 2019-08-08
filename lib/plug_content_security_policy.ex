@@ -20,8 +20,7 @@ defmodule PlugContentSecurityPolicy do
 
   - `:directives`: Map of CSP directives with values as lists of strings
   - `:nonces_for`: List of CSP directive keys to generate nonces for
-  - `:report_only`: Set `content-security-policy-report-only` header instead of
-    `content-security-policy`
+  - `:report_only`: Set `#{@report_field}` header instead of `#{@default_field}`
 
   See [README](./readme.html#usage) for usage details.
   """
