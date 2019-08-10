@@ -15,7 +15,7 @@ Add `plug_content_security_policy` to the list of dependencies in your `mix.exs`
 ```elixir
 def deps do
   [
-    {:plug_content_security_policy, "~> 0.1.0"}
+    {:plug_content_security_policy, "~> 0.2.1"}
   ]
 end
 ```
