@@ -1,4 +1,4 @@
-# PlugContentSecurityPolicy
+# plug_content_security_policy
 
 [![Build Status](https://secure.travis-ci.org/xtian/plug_content_security_policy.svg?branch=master
 "Build Status")](https://travis-ci.org/xtian/plug_content_security_policy)
