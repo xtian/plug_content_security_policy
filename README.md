@@ -1,7 +1,5 @@
 # plug_content_security_policy
 
-[![Build Status](https://secure.travis-ci.org/xtian/plug_content_security_policy.svg?branch=master
-"Build Status")](https://travis-ci.org/xtian/plug_content_security_policy)
 [![Hex](https://img.shields.io/hexpm/v/plug_content_security_policy.svg)](https://hex.pm/packages/plug_content_security_policy)
 
 This is a [Plug][plug] module for inserting a [Content Security Policy][csp]
