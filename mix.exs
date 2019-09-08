@@ -43,7 +43,7 @@ defmodule PlugContentSecurityPolicy.Mixfile do
   defp deps do
     [
       {:credo, "~> 1.1", only: [:dev, :test], runtime: false},
-      {:credo_contrib, "~> 0.1", only: [:dev, :test], runtime: false},
+      {:credo_contrib, "~> 0.2", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.0-rc", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.18.0", only: :dev},
       {:plug, "~> 1.3"}
