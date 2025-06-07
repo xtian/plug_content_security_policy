@@ -1,7 +1,8 @@
 defmodule PlugContentSecurityPolicyTest do
   use ExUnit.Case, async: true
-  use Plug.Test
 
+  import Plug.Test
+  import Plug.Conn
   import ExUnit.CaptureLog
 
   alias PlugContentSecurityPolicy, as: PlugCSP
@@ -48,7 +49,7 @@ defmodule PlugContentSecurityPolicyTest do
           PlugCSP.init(:foo)
         end)
 
-      assert log =~ "[warn]"
+      assert log =~ "[warning]"
     end
   end
 
@@ -103,7 +104,7 @@ defmodule PlugContentSecurityPolicyTest do
           refute conn.assigns[:img_src_nonce]
         end)
 
-      assert log =~ "[warn]"
+      assert log =~ "[warning]"
     end
 
     test "logs warning if report_only is enabled with no report_uri directive ", %{conn: conn} do
@@ -112,7 +113,7 @@ defmodule PlugContentSecurityPolicyTest do
           PlugCSP.call(conn, %{directives: %{}, nonces_for: [], report_only: true})
         end)
 
-      assert log =~ "[warn]"
+      assert log =~ "[warning]"
 
       log =
         capture_log(fn ->
