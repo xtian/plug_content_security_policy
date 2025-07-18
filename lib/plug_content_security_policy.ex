@@ -39,7 +39,7 @@ defmodule PlugContentSecurityPolicy do
   end
 
   def init(_) do
-    _ = Logger.warn("#{__MODULE__}: Invalid config, using defaults")
+    _ = Logger.warning("#{__MODULE__}: Invalid config, using defaults")
     init(%{})
   end
 
@@ -59,7 +59,7 @@ defmodule PlugContentSecurityPolicy do
     if config.report_only do
       _ =
         unless config.directives[:report_uri] do
-          Logger.warn("#{__MODULE__}: `report_only` enabled but no `report_uri` specified")
+          Logger.warning("#{__MODULE__}: `report_only` enabled but no `report_uri` specified")
         end
 
       {@report_field, field_value}
@@ -112,7 +112,7 @@ defmodule PlugContentSecurityPolicy do
   end
 
   defp insert_nonces(conn, directives, [key | nonces_for]) do
-    _ = Logger.warn("#{__MODULE__}: Invalid `nonces_for` value: #{inspect(key)}")
+    _ = Logger.warning("#{__MODULE__}: Invalid `nonces_for` value: #{inspect(key)}")
     insert_nonces(conn, directives, nonces_for)
   end
 end
